@@ -1,12 +1,11 @@
 // ==============================================
 //  Patel KevalTech - Fully Functional Website
-//  Replace 'YOUR_FORMSPREE_ID' with your real ID
-//  to receive emails at keval1043@gmail.com
+//  Contact form ab seedha keval1043@gmail.com par bhejega
 // ==============================================
 
 // ---------- CONFIGURATION ----------
-// 🔴 GET YOUR FORMSPREE ID: Go to formspree.io → create form → copy ID from URL (e.g., 'xabc123def')
-const FORMSPREE_ID = 'YOUR_FORMSPREE_ID';
+// Apni Formspree ID yahan daalein (yeh aapki asli ID hai)
+const FORMSPREE_ID = 'mlgavvgy';
 // ------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
