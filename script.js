@@ -1,5 +1,5 @@
 // ==============================================
-//  Patel KevalTech - Fully Functional Website
+//  Hopo Infotech - Fully Functional Website
 //  Contact form ab seedha keval1043@gmail.com par bhejega
 // ==============================================
 
@@ -91,5 +91,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  console.log(`🚀 Patel KevalTech Ready — ${isLive ? 'LIVE MODE (emails will be sent)' : 'DEMO MODE (set Formspree ID)'}`);
+  console.log(`🚀 Hopo Infotech Ready — ${isLive ? 'LIVE MODE (emails will be sent)' : 'DEMO MODE (set Formspree ID)'}`);
 });
