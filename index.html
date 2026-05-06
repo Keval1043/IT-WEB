@@ -441,6 +441,20 @@
       background: #2b6eff;
       border-radius: 10px;
     }
+    .status-success {
+      background: rgba(34, 197, 94, 0.2);
+      color: #a3e9a4;
+      padding: 0.6rem;
+      border-radius: 2rem;
+      border-left: 3px solid #22c55e;
+    }
+    .status-error {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      padding: 0.6rem;
+      border-radius: 2rem;
+      border-left: 3px solid #ef4444;
+    }
   </style>
 </head>
 <body>
@@ -577,7 +591,7 @@
       </div>
     </div>
 
-    <!-- LEAD + CONTACT SECTION (enhanced) -->
+    <!-- LEAD + CONTACT SECTION (Formspree Integration) -->
     <div class="lead-section">
       <div class="contact-info glass-card" data-aos="fade-right">
         <h3><i class="fas fa-headset"></i> Get Direct Support</h3>
@@ -676,6 +690,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <script>
     AOS.init({ duration: 700, once: true, easing: 'ease-out-quad' });
+    
     // Subtle 3D tilt effect (premium & lightweight)
     const tiltElements = document.querySelectorAll('.service-card');
     tiltElements.forEach(el => {
@@ -695,45 +710,79 @@
       });
     });
 
-    // modern form handling with visual feedback & email prefilling
+    // ---------- FORMSPREE INTEGRATION (Live API) ----------
+    const FORM_ID = 'mlgavvgy';
     const form = document.getElementById('leadForm');
     const statusDiv = document.getElementById('formStatus');
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const service = document.getElementById('serviceType').value;
-      if (!name || !phone || !service) {
-        statusDiv.innerHTML = '<span style="color:#ffb347; background:#1e1a2f padding:6px 10px; border-radius:40px;"><i class="fas fa-exclamation-triangle"></i> Please fill required fields: Name, Phone, Service.</span>';
-        return;
-      }
-      if (phone.replace(/[^0-9]/g, '').length < 8) {
-        statusDiv.innerHTML = '<span style="color:#ffb347;"><i class="fas fa-phone-slash"></i> Enter valid phone number (min 8 digits).</span>';
-        return;
-      }
-      const submitBtn = document.getElementById('submitBtn');
-      const originalText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
-      submitBtn.disabled = true;
+    const submitBtn = document.getElementById('submitBtn');
 
-      setTimeout(() => {
-        statusDiv.innerHTML = '<span style="color:#86efac;"><i class="fas fa-check-circle"></i> ✓ Request sent! Expert will connect within 30 mins.</span>';
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-        // Build email body with all details
-        const email = document.getElementById('email').value || '';
+        // Gather values
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const serviceType = document.getElementById('serviceType').value;
         const urgency = document.getElementById('urgency').value;
-        const msgText = document.getElementById('message').value;
-        const bodyContent = `Name: ${name}%0APhone: ${phone}%0AEmail: ${email}%0AService: ${service}%0AUrgency: ${urgency}%0AMessage: ${msgText || '-'}%0A%0A-- Hopo Infotech Support Lead --`;
-        window.open(`mailto:keval1043@gmail.com?subject=IT Support Request from ${name}&body=${bodyContent}`, '_blank');
-        
-        // Optional reset after 5 secs but not mandatory to keep data
-        setTimeout(() => {
-          statusDiv.innerHTML = '';
-        }, 7000);
-      }, 800);
-    });
+        const message = document.getElementById('message').value.trim();
+
+        // Simple validation
+        if (!name || !phone || !serviceType) {
+          statusDiv.innerHTML = '<div class="status-error"><i class="fas fa-exclamation-triangle"></i> Please fill Name, Phone and Service.</div>';
+          return;
+        }
+
+        // Disable button & show loading
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+        // Prepare payload for Formspree
+        const payload = {
+          name: name,
+          phone: phone,
+          email: email,
+          serviceType: serviceType,
+          urgency: urgency,
+          message: message,
+          _subject: `New IT Support Lead from ${name}`
+        };
+
+        try {
+          const response = await fetch(`https://formspree.io/f/${FORM_ID}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            statusDiv.innerHTML = '<div class="status-success"><i class="fas fa-check-circle"></i> ✅ Thank you! Keval will contact you within 30 minutes.</div>';
+            form.reset();  // clear all fields after success
+          } else {
+            const errorData = await response.json();
+            console.error('Formspree error:', errorData);
+            statusDiv.innerHTML = '<div class="status-error"><i class="fas fa-bug"></i> Submission failed. Please call +91 95104 13920 directly.</div>';
+          }
+        } catch (err) {
+          console.error('Network error:', err);
+          statusDiv.innerHTML = '<div class="status-error"><i class="fas fa-wifi"></i> Network error. Try again or call us.</div>';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+          // Auto-hide status after 7 seconds
+          setTimeout(() => {
+            if (statusDiv.innerHTML !== '') {
+              statusDiv.innerHTML = '';
+            }
+          }, 7000);
+        }
+      });
+    }
   </script>
 </body>
 </html>
